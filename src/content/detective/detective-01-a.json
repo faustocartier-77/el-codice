@@ -1,0 +1,19 @@
+{
+  "id": "detective-01-a",
+  "arco": "detective",
+  "concepto": "variables",
+  "teoria": "En este oficio, todo dato importa: un nombre, una hora, un lugar. Guardamos cada uno en una 'variable', una caja con etiqueta que podés volver a abrir cuando la necesites.",
+  "ejemploResuelto": {
+    "codigo": "sospechoso = \"Ana\"\nprint(sospechoso)",
+    "output": "Ana"
+  },
+  "enunciado": "Guardá el nombre del sospechoso principal en una variable llamada sospechoso y mostralo en pantalla.",
+  "pistas": [
+    "Recordá: necesitás una caja con etiqueta para guardar el nombre.",
+    "La sintaxis es nombre_variable = valor.",
+    "Te falta la última línea: usar print() para mostrar lo que guardaste."
+  ],
+  "testCases": [
+    { "input": null, "expectedOutput": "Ana" }
+  ]
+}

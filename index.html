@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>El Códice</title>
+    <style>
+      html, body { margin: 0; padding: 0; background: #0a0a12; height: 100%; font-family: "Segoe UI", system-ui, sans-serif; }
+      #app { position: relative; width: 100%; height: 100%; }
+      canvas { display: block; }
+
+      /* ---- UI del nivel (overlay DOM sobre la escena de Phaser) ---- */
+      #nivel-ui {
+        position: absolute;
+        inset: 0;
+        color: #e8e8f0;
+        box-sizing: border-box;
+      }
+      #nivel-ui.oculta { display: none; }
+
+      .nivel-ui-scroll {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        background: rgba(10, 10, 18, 0.92);
+      }
+
+      .barra-superior {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 10px 16px;
+        border-bottom: 1px solid #2a2a3a;
+        position: sticky;
+        top: 0;
+        background: rgba(10, 10, 18, 0.96);
+        z-index: 10;
+      }
+      .barra-superior .nivel-id { font-weight: 700; font-size: 16px; letter-spacing: 1px; }
+      .barra-superior .nivel-concepto { color: #7fd6ff; font-size: 13px; }
+
+      .columnas {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 14px;
+        padding: 14px 16px;
+      }
+
+      .seccion {
+        background: #14141f;
+        border: 1px solid #26263a;
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+      }
+      .seccion h3 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #9aa0b5;
+      }
+      .seccion p { margin: 0; line-height: 1.55; font-size: 14px; }
+
+      button {
+        background: #24324d;
+        color: #dce6f5;
+        border: 1px solid #3a4c6b;
+        border-radius: 6px;
+        padding: 7px 12px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+      button:hover { background: #2e4270; }
+      button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+      .btn-primario { background: #1e7e4f; border-color: #2a9d62; color: #eafff3; font-weight: 600; }
+      .btn-primario:hover { background: #24995f; }
+
+      pre {
+        background: #0c0c14;
+        border: 1px solid #26263a;
+        border-radius: 6px;
+        padding: 10px;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 13px;
+        overflow-x: auto;
+        line-height: 1.5;
+      }
+      .output-ejemplo {
+        color: #9fd6a3;
+        font-size: 12.5px;
+        margin-top: 8px;
+      }
+
+      .oculta { display: none; }
+
+      #nivel-ui-pistas { display: flex; flex-direction: column; gap: 8px; }
+      .pistas-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+      #nivel-ui-pistas .pista-texto {
+        margin-top: 6px;
+        font-size: 13.5px;
+        color: #ffd17f;
+        border-left: 3px solid #ffb347;
+        padding-left: 10px;
+      }
+
+      #nivel-ui-editor { height: 300px; border: 1px solid #26263a; border-radius: 8px; overflow: hidden; }
+      .monaco-editor, .monaco-editor-background { background: #0c0c14; }
+
+      .pie-ejecucion {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      #nivel-ui-resultado {
+        flex: 1;
+        min-width: 220px;
+        font-size: 13.5px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: #16161f;
+        border: 1px solid #26263a;
+      }
+      #nivel-ui-resultado.ok { border-color: #2a9d62; background: #0f2619; }
+      #nivel-ui-resultado.error { border-color: #d65a5a; background: #281414; }
+      #nivel-ui-resultado .titulo { font-weight: 700; }
+      #nivel-ui-resultado .detalle { margin-top: 4px; color: #b8bcd0; }
+
+      .aviso-pegado {
+        font-size: 12px;
+        color: #8a8fa5;
+        margin-top: 8px;
+      }
+
+      /* ---- Theming por arco (aplicado via #nivel-ui[data-arco="..."]) ---- */
+      #nivel-ui[data-arco="detective"] { --accent-color: #3b82f6; }
+      #nivel-ui[data-arco="archimago"] { --accent-color: #a78bfa; }
+      #nivel-ui[data-arco="nave"] { --accent-color: #06b6d4; }
+
+      /* Acento visible en la UI del nivel */
+      #nivel-ui .nivel-id { color: var(--accent-color, #7fd6ff); }
+      #nivel-ui .barra-superior { border-bottom-color: var(--accent-color, #2a2a3a); }
+      #nivel-ui .seccion h3 { color: var(--accent-color, #9aa0b5); }
+      #nivel-ui .camino-mascota { border-bottom: 1px dashed var(--accent-color, #2a2a3a); }
+
+      /* Camino de la mascota que camina debajo del título "Tu código" */
+      .camino-mascota {
+        --mascota-tam: 44px;
+        height: 52px;
+        position: relative;
+        margin: 8px 0;
+        overflow: hidden;
+      }
+      .mascota-paseo {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        user-select: none;
+        pointer-events: none;
+        will-change: left, transform, background-position;
+        animation: pasear 9s linear infinite;
+      }
+      .mascota-paseo.mascota-emoji {
+        font-size: 38px;
+        line-height: 1;
+      }
+      /* Sprite sheet: varios frames en una sola tira horizontal */
+      .mascota-paseo.es-sprite {
+        width: var(--mascota-tam);
+        height: var(--mascota-tam);
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        background-size: calc(var(--mascota-tam) * var(--frames, 1)) var(--mascota-tam);
+        image-rendering: pixelated;
+        animation: pasear 9s linear infinite, sprite-frames 0.7s steps(var(--frames, 1), jump-none) infinite;
+      }
+      /* Imagen estática (PNG del personaje) */
+      .mascota-paseo.es-imagen {
+        width: var(--mascota-tam);
+        height: var(--mascota-tam);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        animation: pasear 9s linear infinite, pulso-mascota 2.4s ease-in-out infinite;
+      }
+      @keyframes pasear {
+        0%     { left: 0; transform: translateY(-50%) scaleX(1); }
+        49.9%  { left: calc(100% - var(--mascota-tam)); transform: translateY(-50%) scaleX(1); }
+        50.1%  { left: calc(100% - var(--mascota-tam)); transform: translateY(-50%) scaleX(-1); }
+        100%   { left: 0; transform: translateY(-50%) scaleX(-1); }
+      }
+      @keyframes sprite-frames {
+        from { background-position-x: 0; }
+        to   { background-position-x: calc(var(--mascota-tam) * (var(--frames, 1) - 1) * -1); }
+      }
+      @keyframes pulso-mascota {
+        0%, 100% { filter: drop-shadow(0 0 3px var(--accent-color, #3b82f6)); }
+        50%      { filter: drop-shadow(0 0 12px var(--accent-color, #3b82f6)); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mascota-paseo { animation: none; }
+      }
+
+      /* Avatar pequeño en la sección de Pistas */
+      .mascota-avatar {
+        font-size: 15px;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="nivel-ui" class="oculta">
+      <div class="nivel-ui-scroll">
+        <div class="barra-superior">
+          <span class="nivel-id" id="nivel-ui-id">Level</span>
+          <span class="nivel-concepto" id="nivel-ui-concepto">concepto</span>
+        </div>
+        <div class="columnas">
+          <div class="columna-izquierda">
+            <div class="seccion">
+              <h3>Teoría</h3>
+              <p id="nivel-ui-teoria"></p>
+            </div>
+            <div class="seccion">
+              <h3>Ejemplo resuelto</h3>
+              <p class="aviso-pegado">Podés leerlo las veces que quieras antes de intentar el ejercicio.</p>
+              <button id="nivel-ui-ver-ejemplo">Ver ejemplo</button>
+              <pre id="nivel-ui-ejemplo" class="oculta"></pre>
+              <p class="output-ejemplo oculta" id="nivel-ui-ejemplo-output"></p>
+            </div>
+            <div class="seccion">
+              <h3>Pistas <span class="mascota-avatar" aria-hidden="true">🔍</span></h3>
+              <div class="pistas-acciones" id="nivel-ui-pistas-acciones"></div>
+              <div id="nivel-ui-pistas"></div>
+            </div>
+          </div>
+          <div class="columna-derecha">
+            <div class="seccion">
+              <h3>Enunciado</h3>
+              <p id="nivel-ui-enunciado"></p>
+            </div>
+            <div class="seccion">
+              <h3>Tu código</h3>
+              <p class="aviso-pegado">No se puede pegar código: escribí la solución a mano.</p>
+              <div class="camino-mascota" aria-label="Paseo de la mascota del nivel" role="presentation"></div>
+              <div id="nivel-ui-editor"></div>
+              <div class="pie-ejecucion">
+                <button class="btn-primario" id="nivel-ui-ejecutar">Ejecutar</button>
+                <div id="nivel-ui-resultado"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

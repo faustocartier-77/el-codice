@@ -1,0 +1,39 @@
+{
+  "detective": {
+    "nombre": "Detective",
+    "colorPrimario": "#2b2b3d",
+    "accent": "#3b82f6",
+    "emoji": "🔍",
+    "filtroAudio": "radio-estatica",
+    "tipografiaDialogo": "mono",
+    "mascota": {
+      "tipo": "sprite",
+      "src": "/sprites/detective/mascota-caminar.png",
+      "frames": 8
+    }
+  },
+  "archimago": {
+    "nombre": "Archimago",
+    "colorPrimario": "#4b2e6b",
+    "accent": "#a78bfa",
+    "emoji": "🧙",
+    "filtroAudio": "eco-magico",
+    "tipografiaDialogo": "serif",
+    "mascota": {
+      "tipo": "imagen",
+      "src": "/images/personajes/chrono-mage.png"
+    }
+  },
+  "nave": {
+    "nombre": "Núcleo",
+    "colorPrimario": "#0d3b3b",
+    "accent": "#06b6d4",
+    "emoji": "🤖",
+    "filtroAudio": "sintetico-robotico",
+    "tipografiaDialogo": "sans-tech",
+    "mascota": {
+      "tipo": "imagen",
+      "src": "/images/personajes/orrery-solar-system.png"
+    }
+  }
+}

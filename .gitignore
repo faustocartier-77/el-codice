@@ -1,0 +1,52 @@
+# ──────────────────────────────────────────────
+#  El Códice — .gitignore
+# ──────────────────────────────────────────────
+
+# Dependencias
+node_modules/
+
+# Runtime de Pyodide (binarios ~13 MB) — regenerar con: npm run copiar-pyodide
+public/pyodide/
+
+# Build de Vite
+dist/
+dist-ssr/
+
+# Cobertura de tests
+coverage/
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Caché de bundlers / TypeScript
+.vite/
+.cache/
+*.tsbuildinfo
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editores / IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Archivos temporales
+*.tmp
+*.bak

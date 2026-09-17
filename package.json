@@ -1,0 +1,21 @@
+{
+  "name": "el-codice",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "copiar-pyodide": "node scripts/copiar-pyodide.mjs"
+  },
+  "dependencies": {
+    "phaser": "^3.80.1",
+    "pyodide": "^0.26.2",
+    "monaco-editor": "^0.50.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
+  }
+}
