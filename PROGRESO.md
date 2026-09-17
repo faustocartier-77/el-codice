@@ -96,11 +96,25 @@ Detalle completo en `docs/CAMBIOS.md`. Resumen:
 5. Decidir si versionar `public/pyodide/` (~13 MB) o regenerarlo desde
    `node_modules/pyodide` (documentar el paso).
 
+## 🔗 Git y GitHub (2026-09-16/17)
+
+- Repo local: `..\ElCodice-Git-Repo\` (copia del proyecto, rama `main`).
+- Commit inicial `f45fb15` — 27 archivos, working tree limpio.
+- **Publicado** en https://github.com/faustocartier-77/el-codice (público,
+  rama `main`). Remote `origin` configurado, push hecho.
+- Excluidos del repo: `node_modules/`, `dist/`, `public/pyodide/`.
+- `public/pyodide/` se regenera con `npm run copiar-pyodide` (script nuevo en
+  `scripts/copiar-pyodide.mjs`, documentado en README y .gitignore).
+- `.gitattributes` agrega normalización LF.
+- Advertencia: el proyecto de trabajo es `el-codice\`; el repo es una **copia**.
+  Si se sigue desarrollando en `el-codice`, hay que sincronizar (robocopy +
+  commit) o cambiar de lugar de trabajo principal.
+
 ## 📦 Estado actual
 
 - `tsc --noEmit`: 0 errores.
 - `npm run build`: OK (592 módulos).
-- Dev server: `http://localhost:5173/` (lanzado desacoplado).
+- Dev server: `http://localhost:5173/` (lanzado desacoplado, PID 8316).
 - Documentación: `README.md`, `PROGRESO.md`, `docs/ARQUITECTURA.md`, `docs/CAMBIOS.md`.
 
 ---

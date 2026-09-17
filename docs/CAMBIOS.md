@@ -4,6 +4,19 @@ Registro cronológico de cambios relevantes. Lo más reciente arriba.
 
 ---
 
+## 2026-09-16/17 — Repositorio en GitHub + documento de regeneración de Pyodide
+
+- Creado `scripts/copiar-pyodide.mjs` + script npm `copiar-pyodide` (copia el
+  runtime de Pyodide desde `node_modules` a `public/pyodide/`).
+- README: sección "Scripts disponibles" y nota sobre regeneración de Pyodide.
+- Copiado el proyecto a `..\ElCodice-Git-Repo\` (sin `node_modules`, `dist`,
+  `public/pyodide/`), con documentación, `.gitignore` y `.gitattributes`.
+- `git init -b main` + commit inicial `f45fb15` (27 archivos).
+- Repo público creado con `gh`: https://github.com/faustocartier-77/el-codice
+- Push de `main` a `origin/main` exitoso, working tree limpio.
+
+---
+
 ## 2026-09-16 — Revisión "de cabeza a pie" y arreglo de 11 bugs
 
 ### Contexto
